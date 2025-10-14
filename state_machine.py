@@ -4,7 +4,7 @@ class StateMachine:
     def __init__(self, start_state, rules):
         self.cur_state = start_state
         self.rules = rules
-        self.cur_state.enter()
+        self.cur_state.enter('START',None)
 
     def update(self):
         self.cur_state.do()
@@ -16,8 +16,8 @@ class StateMachine:
         for check_event in self.rules[self.cur_state].keys():
             if check_event(state_event):
                 self.next_state = self.rules[self.cur_state][check_event]
-                self.cur_state.exit()
-                self.cur_state.enter()
+                self.cur_state.exit(state_event)
+                self.cur_state.enter(state_event)
                 #상태변환 디버그 프린트
                 print(f'{self.cur_state.__class__.__name__} - {event_to_string(state_event)} -> {self.next_state.__class__.__name__}')
                 self.cur_state = self.next_state

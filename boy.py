@@ -3,19 +3,55 @@ from sdl2 import SDL_KEYDOWN, SDLK_SPACE, SDLK_RIGHT, SDL_KEYUP, SDLK_LEFT
 
 from state_machine import StateMachine
 #이벤트를 체킇는 함수들을 구현
+def right_up(e):
+    return e[0]=='INPUT'and e[1].type==SDL_KEYUP and e[1].key==SDLK_RIGHT
+def left_up(e):
+    return e[0]=='INPUT'and e[1].type==SDL_KEYUP and e[1].key==SDLK_LEFT
+def right_down(e):
+    return e[0]=='INPUT'and e[1].type==SDL_KEYDOWN and e[1].key==SDLK_RIGHT
+def left_down(e):
+    return e[0]=='INPUT'and e[1].type==SDL_KEYDOWN and e[1].key==SDLK_LEFT
+
 def space_down(e):
     return e[0]=='INPUT'and e[1].type==SDL_KEYDOWN and e[1].key==SDLK_SPACE
 
+def time_out(e):
+    return e[0]=='TIME_OUT'
+
+class Run:
+
+    def __init__(self, boy):
+        self.boy = boy
+
+    def enter(self,e):
+        self.boy.dir = 1
+        if right_down(e) or left_up(e):
+            self.boy.dir = self.boy.face_dir = 1
+        elif left_down(e) or right_up(e):
+            self.boy.dir = self.boy.face_dir = -1
+
+    def exit(self,e):
+        pass
+
+    def do(self):
+        self.boy.frame = (self.boy.frame + 1) % 8
+        self.boy.x += self.boy.dir*5
+
+    def draw(self):
+        if self.boy.face_dir == 1:  # right
+            self.boy.image.clip_draw(self.boy.frame * 100, 100, 100, 100, self.boy.x, self.boy.y)
+        else:  # face_dir == -1: # left
+            self.boy.image.clip_draw(self.boy.frame * 100, 0, 100, 100, self.boy.x, self.boy.y)
 
 class Sleep:
 
     def __init__(self, boy):
         self.boy = boy
 
-    def enter(self):
+    def enter(self,e):
         self.boy.dir = 0
 
-    def exit(self):
+    def exit(self,e):
         pass
 
     def do(self):
@@ -33,14 +69,18 @@ class Idle:
     def __init__(self, boy):
         self.boy = boy
 
-    def enter(self):
+    def enter(self,e):
         self.boy.dir = 0
+        self.boy.wait_start_time = get_time()
 
-    def exit(self):
+    def exit(self,e):
         pass
 
     def do(self):
         self.boy.frame = (self.boy.frame + 1) % 8
+        if get_time()-self.boy.wait_start_time > 1000:
+            #idle 2초 경과하면 state machine에거 time out 이벤트 전달
+            self.boy.state_machine.handle_state_event(('TIME_OUT', None))
 
     def draw(self):
         if self.boy.face_dir == 1: # right
@@ -49,21 +89,24 @@ class Idle:
             self.boy.image.clip_draw(self.boy.frame * 100, 200, 100, 100, self.boy.x, self.boy.y)
 
 
+
 class Boy:
     def __init__(self):
         self.x, self.y = 400, 90
         self.frame = 0
-        self.face_dir = -1
+        self.face_dir = 1
         self.dir = 0
         self.image = load_image('animation_sheet.png')
-
+        self.wait_start_time = 0.0
         self.IDLE = Idle(self)
         self.SLEEP = Sleep(self)#새로운 SLEEP 상태 생성
+        self.RUN = Run(self)
         self.state_machine = StateMachine(
-            self.SLEEP,
+            self.IDLE,
             {
             self.SLEEP : {space_down:self.IDLE},
-            self.IDLE : {}
+            self.IDLE : {time_out :self.SLEEP, right_down : self.RUN, left_down : self.RUN, right_up : self.RUN, left_up:self.RUN},
+            self.RUN:{right_down: self.IDLE,left_down: self.IDLE,right_up: self.IDLE, left_up:self.IDLE}
             }
         )
 
