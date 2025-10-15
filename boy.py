@@ -90,10 +90,9 @@ class AutoRun:
     def __init__(self, boy):
         self.boy = boy
     def enter(self,e):
-        if right_down(e) or left_up(e):
-            self.boy.dir=self.boy.face_dir=1
-        elif left_down(e) or right_up(e):
-            self.boy.dir = self.boy.face_dir = -1
+
+            self.boy.dir=self.boy.face_dir
+
     def exit(self,e):
         pass
     def do(self):
