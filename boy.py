@@ -99,7 +99,7 @@ class AutoRun:
             self.boy.face_dir *= -1
             self.boy.dir = self.boy.face_dir
         self.boy.frame = (self.boy.frame +1) % 8
-        self.boy.x+=self.boy.dir*8
+        self.boy.x+=self.boy.dir*15
         if get_time()-self.boy.wait_time>5.0:
             #5초 경과후 타임아웃
             self.boy.state_machine.handle_state_event(('TIME_OUT', None))
