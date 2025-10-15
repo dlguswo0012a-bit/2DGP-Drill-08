@@ -40,7 +40,7 @@ class Idle:
 
     def do(self):
         self.boy.frame = (self.boy.frame + 1) % 8
-        if get_time()-self.boy.wait_time>2.0:
+        if get_time()-self.boy.wait_time>30.0:
             #IDLE 2초 경과하면 state_machine에게 TIME_OUT 이벤트 전달
             self.boy.state_machine.handle_state_event(('TIME_OUT', None))
 
