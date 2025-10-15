@@ -4,7 +4,7 @@ from sdl2 import SDL_KEYDOWN, SDLK_SPACE, SDLK_RIGHT, SDL_KEYUP, SDLK_LEFT
 from state_machine import StateMachine
 #이벤트를 체킇는 함수들을 구현
 from pico2d import load_image, get_time
-from sdl2 import SDL_KEYDOWN, SDLK_SPACE, SDLK_RIGHT, SDL_KEYUP, SDLK_LEFT
+from sdl2 import SDL_KEYDOWN, SDLK_SPACE, SDLK_RIGHT, SDL_KEYUP, SDLK_LEFT, SDLK_a
 
 from state_machine import StateMachine
 
@@ -23,7 +23,8 @@ def right_up(e):
     return e[0]=='INPUT' and e[1].type==SDL_KEYUP and e[1].key==SDLK_RIGHT
 def left_up(e):
     return e[0]=='INPUT' and e[1].type==SDL_KEYUP and e[1].key==SDLK_LEFT
-
+def a_down(e):
+    return e[0]=='INPUT' and e[1].type==SDL_KEYDOWN and e[1].key==SDLK_a
 
 class Idle:
 
@@ -118,12 +119,15 @@ class Boy:
         self.IDLE = Idle(self)
         self.SLEEP = Sleep(self)
         self.RUN = Run(self)
+        self.AUTO_RUN = AutoRun(self)
         self.state_machine = StateMachine(
             self.IDLE,
             {
                 self.SLEEP:{space_down: self.IDLE},
-                self.IDLE:{time_out:self.SLEEP,right_down:self.RUN,left_down:self.RUN,right_up:self.RUN,left_up:self.RUN},
-                self.RUN:{right_up:self.IDLE,left_up:self.IDLE,right_down:self.IDLE,left_down:self.IDLE}})
+                self.IDLE:{time_out:self.SLEEP,right_down:self.RUN,left_down:self.RUN,right_up:self.RUN,left_up:self.RUN,a_down : self.AUTO_RUN},
+                self.RUN:{right_up:self.IDLE,left_up:self.IDLE,right_down:self.IDLE,left_down:self.IDLE},
+                self.AUTO_RUN:{time_out:self.IDLE, right_down:self.RUN,left_down:self.RUN}
+            })
 
     def update(self):
         self.state_machine.update()
