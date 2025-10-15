@@ -81,9 +81,9 @@ class Run:
         self.boy.x+=self.boy.dir*5
     def draw(self):
         if self.boy.face_dir == 1:#right
-            self.boy.image.clip_draw(self.boy.frame*100,100,100,100,self.boy.x,self.boy.y)
+            self.boy.image.clip_draw(self.boy.frame*100,100,100,100,self.boy.x,self.boy.y )
         else:#left
-            self.boy.image.clip_draw(self.boy.frame * 100, 0, 100, 100, self.boy.x,self.boy.y)
+            self.boy.image.clip_draw(self.boy.frame * 100, 0, 100, 100, self.boy.x,self.boy.y )
 
 class AutoRun:
 
@@ -101,9 +101,9 @@ class AutoRun:
         self.boy.x+=self.boy.dir*5
     def draw(self):
         if self.boy.face_dir == 1:#right
-            self.boy.image.clip_draw(self.boy.frame*100,100,100,100,self.boy.x,self.boy.y)
+            self.boy.image.clip_draw(self.boy.frame*100,100,100,100,self.boy.x,self.boy.y+25,200,200)
         else:#left
-            self.boy.image.clip_draw(self.boy.frame * 100, 0, 100, 100, self.boy.x,self.boy.y)
+            self.boy.image.clip_draw(self.boy.frame * 100, 0, 100, 100, self.boy.x,self.boy.y+25,200,200)
 
 class Boy:
     def __init__(self):
