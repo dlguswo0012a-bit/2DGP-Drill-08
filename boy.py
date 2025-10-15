@@ -90,12 +90,13 @@ class AutoRun:
     def __init__(self, boy):
         self.boy = boy
     def enter(self,e):
-
-            self.boy.dir=self.boy.face_dir
+        self.boy.dir=self.boy.face_dir
 
     def exit(self,e):
         pass
     def do(self):
+        if self.boy.x > 750 or self.boy.x < 50:
+            self.boy.dir *= -1
         self.boy.frame = (self.boy.frame +1) % 8
         self.boy.x+=self.boy.dir*8
         if get_time()-self.boy.wait_time>5.0:
